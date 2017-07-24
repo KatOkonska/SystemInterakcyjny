@@ -1,0 +1,154 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema 15_okonska
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema 15_okonska
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `15_okonska` DEFAULT CHARACTER SET utf8 ;
+USE `15_okonska` ;
+
+-- -----------------------------------------------------
+-- Table `15_okonska`.`Role`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `15_okonska`.`Role` (
+  `Role_ID` INT NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`Role_ID`),
+  UNIQUE INDEX `Role_ID_UNIQUE` (`Role_ID` ASC))
+ENGINE = MyISAM;
+
+
+-- -----------------------------------------------------
+-- Table `15_okonska`.`User`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `15_okonska`.`User` (
+  `User_ID` INT NOT NULL,
+  `User_login` VARCHAR(45) NOT NULL,
+  `User_password` VARCHAR(128) NOT NULL,
+  `Role_ID` INT NOT NULL,
+  PRIMARY KEY (`User_ID`),
+  UNIQUE INDEX `User_login_UNIQUE` (`User_login` ASC),
+  INDEX `fk_User_Role1_idx` (`Role_ID` ASC),
+  UNIQUE INDEX `Role_ID_UNIQUE` (`Role_ID` ASC),
+  UNIQUE INDEX `User_ID_UNIQUE` (`User_ID` ASC),
+  CONSTRAINT `fk_User_Role1`
+    FOREIGN KEY (`Role_ID`)
+    REFERENCES `15_okonska`.`Role` (`Role_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `15_okonska`.`User_data`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `15_okonska`.`User_data` (
+  `User_data_name` VARCHAR(100) NOT NULL,
+  `User_data_mail` VARCHAR(100) NOT NULL,
+  `User_Data_ID` VARCHAR(45) NOT NULL,
+  `User_ID` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`User_Data_ID`),
+  INDEX `fk_User_data_User1_idx` (`User_ID` ASC),
+  UNIQUE INDEX `User_data_mail_UNIQUE` (`User_data_mail` ASC),
+  CONSTRAINT `fk_User_data_User1`
+    FOREIGN KEY (`User_ID`)
+    REFERENCES `15_okonska`.`User` (`User_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `15_okonska`.`Training_day`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `15_okonska`.`Training_day` (
+  `Training_day_ID` INT NOT NULL,
+  `Training_day_day_number` INT NOT NULL,
+  `User_ID` INT NOT NULL,
+  PRIMARY KEY (`Training_day_ID`),
+  INDEX `fk_Training_day_User1_idx` (`User_ID` ASC),
+  UNIQUE INDEX `User_ID_UNIQUE` (`User_ID` ASC),
+  CONSTRAINT `fk_Training_day_User1`
+    FOREIGN KEY (`User_ID`)
+    REFERENCES `15_okonska`.`User` (`User_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `15_okonska`.`Sport_Name`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `15_okonska`.`Sport_Name` (
+  `Sport_Name_ID` INT NOT NULL,
+  `Sport_Name` VARCHAR(45) NULL,
+  PRIMARY KEY (`Sport_Name_ID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `15_okonska`.`Style`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `15_okonska`.`Style` (
+  `Style_ID` INT NOT NULL,
+  `Style_Name` VARCHAR(45) NULL,
+  `Sport_Name_ID` INT NOT NULL,
+  PRIMARY KEY (`Style_ID`),
+  INDEX `fk_Style_Sport_Name1_idx` (`Sport_Name_ID` ASC),
+  CONSTRAINT `fk_Style_Sport_Name1`
+    FOREIGN KEY (`Sport_Name_ID`)
+    REFERENCES `15_okonska`.`Sport_Name` (`Sport_Name_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `15_okonska`.`Sport`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `15_okonska`.`Sport` (
+  `Sport_ID` INT NOT NULL,
+  `Sport_time` INT NOT NULL,
+  `Sport_kcal` INT NOT NULL,
+  `Sport_distance` INT NULL,
+  `Sport_name_ID` INT NOT NULL,
+  `User_ID` INT NOT NULL,
+  `User_Role_ID` INT NOT NULL,
+  `Style_ID` INT NOT NULL,
+  PRIMARY KEY (`Sport_ID`),
+  INDEX `fk_Sport_Sport_Name1_idx` (`Sport_name_ID` ASC),
+  INDEX `fk_Sport_User1_idx` (`User_ID` ASC, `User_Role_ID` ASC),
+  INDEX `fk_Sport_Style1_idx` (`Style_ID` ASC),
+  UNIQUE INDEX `User_ID_UNIQUE` (`User_ID` ASC),
+  UNIQUE INDEX `Sport_ID_UNIQUE` (`Sport_ID` ASC),
+  CONSTRAINT `fk_Sport_Sport_Name1`
+    FOREIGN KEY (`Sport_name_ID`)
+    REFERENCES `15_okonska`.`Sport_Name` (`Sport_Name_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Sport_User1`
+    FOREIGN KEY (`User_ID`)
+    REFERENCES `15_okonska`.`User` (`User_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Sport_Style1`
+    FOREIGN KEY (`Style_ID`)
+    REFERENCES `15_okonska`.`Style` (`Style_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
